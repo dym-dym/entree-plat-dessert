@@ -1,6 +1,6 @@
 import numpy as np
 
-from utils import get_match, prefers
+from utils import get_matched_student, prefers
 
 
 
@@ -14,7 +14,7 @@ def stable_marriage(students, schools):
             if students_free[st_index]:
                 if len(students[st_index]) > 0:
                     proposed_school = students[st_index][0]
-                    existing_match = get_match(proposed_school, matches)
+                    existing_match = get_matched_student(proposed_school, matches)
                     if(existing_match < 0):
                         matches.append((st_index, proposed_school))
                         students_free[st_index] = False
