@@ -36,6 +36,8 @@ MANIFEST
 pip-log.txt
 pip-delete-this-directory.txt
 
+random_values.txt
+
 # Unit test / coverage reports
 htmlcov/
 .tox/
