@@ -4,7 +4,15 @@ from utils import get_matched_student, prefers
 
 
 
-def stable_marriage(students, schools):
+def stable_marriage(students : np.ndarray, schools : np.ndarray) -> list[tuple[int,int]]:
+    """
+    Given a set of preferences, return a stable matching of students and schools using the Gale-Shapley algorithm
+
+    :param students : a Numpy array of student_number arrays, each being a an ordered preference array of school IDs
+    :param schools : a Numpy array of school_number arrays, each being an ordered preference array of student IDs
+    :return: (list[tuple[int,int]]) A list of (student,school) tuples representing matches between the two sets
+    """ 
+
     students_free = [True for x in students]
     schools_free = [True for x in schools]
     students = list(map(list, students))

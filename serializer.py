@@ -1,7 +1,16 @@
 import numpy as np
 
 
-def read_preferences(preference_file):
+def read_preferences(preference_file : str) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Reads a set of student/school preferences from a file
+
+    :param preference_file: (str) File to read from
+    :return: student_prefs : a Numpy array of student preferences, each being an array of school IDs
+             school_prefs : a Numpy array of school arrays, each being an array of student IDs
+    """ 
+
+
     with open(preference_file, 'r') as f:
         student_number = -1
         school_number = -1
@@ -28,7 +37,16 @@ def read_preferences(preference_file):
 
 
 
-def write_preferences(preference_file, student_prefs, school_prefs):
+def write_preferences(preference_file : str, student_prefs : np.ndarray, school_prefs : np.ndarray) -> None:
+    """
+    Writes a set of student/school preferences to a file
+
+    :param preference_file: (str) File to write to
+    :param student_prefs: (np.ndarray) Numpy array of student preferences
+    :param school_prefs: (np.ndarray) Numpy array of school preferences
+    :return: None
+    """ 
+
     with open(preference_file, 'w') as f:
         f.write(f'{len(student_prefs)}\n')
         for student in student_prefs:
