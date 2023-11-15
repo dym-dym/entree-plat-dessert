@@ -69,3 +69,18 @@ def get_matched_school(student : int, matches : list[tuple[int,int]]) -> int:
     return -1
 
 
+
+def satisfaction(matches : list[tuple[int,int]], students : np.ndarray, schools : np.ndarray):
+    student_scores, school_scores = [], []
+    for st_index in range(len(students)):
+        matched_school = get_matched_school(st_index, matches)
+        school_rank = len(students[st_index]) if matched_school < 0 else np.where(students[st_index] == matched_school)[0][0]
+        student_scores.append((len(students[st_index]) - school_rank)/len(students[st_index]))
+
+    for sc_index in range(len(schools)):
+        matched_student = get_matched_student(sc_index, matches)
+        student_rank = len(schools[sc_index]) if matched_student < 0 else np.where(schools[sc_index] == matched_student)[0][0]
+        school_scores.append((len(schools[sc_index]) - student_rank)/len(schools[sc_index]))
+    
+    return student_scores, school_scores
+

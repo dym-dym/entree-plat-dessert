@@ -76,12 +76,14 @@ def random_test(student_number, school_number):
     print(matches)
 
     if(not is_everyone_matched(matches, students, schools)):
-        print("Not everyone is matched")
-        return False
+        print("Warning : Not everyone is matched")
 
     if(not is_matching_stable(matches, students, schools)):
         print("Matching is unstable")
         return False
+    
+    student_scores, school_scores = satisfaction(matches, students, schools)
+    print(student_scores, school_scores)
 
 
     print("Matching is complete and stable")

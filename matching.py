@@ -34,7 +34,7 @@ def stable_marriage(students : np.ndarray, schools : np.ndarray) -> list[tuple[i
                             students_free[st_index] = False
                     del(students[st_index][0])
                 else:
-                    raise UserWarning("Unmatched student n° {} left with no school choice !".format(st_index))
+                    print(f"Unmatched student n° {st_index} left with no school choice !")
                     students_free[st_index] = False 
     return matches
 
