@@ -77,6 +77,9 @@ def random_test(student_number, school_number):
 
     if(not is_everyone_matched(matches, students, schools)):
         print("Warning : Not everyone is matched")
+        complete = False
+    else:
+        complete = True
 
     if(not is_matching_stable(matches, students, schools)):
         print("Matching is unstable")
@@ -90,7 +93,10 @@ def random_test(student_number, school_number):
     print(f"School average satisfaction : {school_avg:.3f}")
 
 
-    print("Matching is complete and stable")
+    if complete:
+        print("Matching is complete and stable")
+    else:
+        print("Matching is stable, but not complete")
     return True
 
 
