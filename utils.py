@@ -70,7 +70,16 @@ def get_matched_school(student : int, matches : list[tuple[int,int]]) -> int:
 
 
 
-def satisfaction(matches : list[tuple[int,int]], students : np.ndarray, schools : np.ndarray):
+def satisfaction(matches : list[tuple[int,int]], students : np.ndarray, schools : np.ndarray) -> tuple[list[float], list[float]]:
+    """
+    Given a list of matches and student/schools, computes the satisfaction measure of each student/school
+    Satisfaction is a value in [0,1]. 1 = student/school has its first choice, 0 =  they are left unmatched.
+
+    :param students: (np.ndarray) Students preference array
+    :param schools: (np.ndarray) Schools preference array
+    :param matches: (list[tuple[int,int]]) A list of matches
+    :return: (list[float], list[float]) : Two lists of satisfaction scores for students/schools 
+    """ 
     student_scores, school_scores = [], []
     for st_index in range(len(students)):
         matched_school = get_matched_school(st_index, matches)

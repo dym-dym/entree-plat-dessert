@@ -84,6 +84,10 @@ def random_test(student_number, school_number):
     
     student_scores, school_scores = satisfaction(matches, students, schools)
     print(student_scores, school_scores)
+    student_avg = np.mean(student_scores)
+    school_avg = np.mean(school_scores)
+    print(f"Student average satisfaction : {student_avg:.3f}")
+    print(f"School average satisfaction : {school_avg:.3f}")
 
 
     print("Matching is complete and stable")
