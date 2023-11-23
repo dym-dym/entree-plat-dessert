@@ -1,0 +1,7 @@
+Matching results:
+Student 0 matches with School 2
+Student 1 matches with School 0
+Student 2 matches with School 1
+
+Student average satisfaction: 0.667
+School average satisfaction: 0.778
