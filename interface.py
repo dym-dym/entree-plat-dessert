@@ -3,6 +3,7 @@ from tkinter import ttk
 import customtkinter as ctk
 from utils import *
 from test_output import *
+from plot_curves import *
 from matching import *
 
 ctk.set_appearance_mode("dark")
@@ -26,7 +27,15 @@ class App(ctk.CTk):
 
                 # Read the results from the file
                 with open(result_file, "r") as file:
-                    result_text = file.read()
+                    lines = file.readlines()
+
+                    # Exclude lines starting with the specified prefixes
+                    filtered_lines = [line.strip() for line in lines if not line.startswith("Student average satisfaction:")
+                                                                        and not line.startswith("School average satisfaction:")
+                                                                        and line.strip()]
+
+                    # Concatenate the filtered lines
+                    result_text = "\n".join(filtered_lines)
 
                 # Update the output label
                 self.output_label_matching.configure(text=result_text)
@@ -59,6 +68,9 @@ class App(ctk.CTk):
             except ValueError:
                 print("Invalid input. Please enter a valid number.")
 
+        def show_graph(self):
+            # Call the satisfaction_curve function with the Canvas as an argument
+            satisfaction_curve(self.graph_canvas)
 
 
         # Make a title in the page
@@ -72,15 +84,16 @@ class App(ctk.CTk):
         # Create CTk Buttons
         self.button_stats = ctk.CTkButton(
             master=self, text="Get the satisfactions", command=get_satisfactions,
-            fg_color="transparent", border_width=2, border_color='#15869d'
+            fg_color="transparent", border_width=2, border_color='#15869d', width=10
         )
         self.button_stats.grid(row=2, padx=2, pady=2, sticky="ew")
 
         self.button_matching = ctk.CTkButton(
             master=self, text="Get matching", command=get_matching,
-            fg_color="transparent", border_width=2, border_color='#15869d'
+            fg_color="transparent", border_width=2, border_color='#15869d', width=100
         )
         self.button_matching.grid(row=4, padx=4, pady=2, sticky="ew")
+
 
 
         # Create a scrollable frame for displaying the result
