@@ -96,12 +96,11 @@ def random_test(student_number, school_number, result_file="matching_results.txt
 
     # Save results to a file
     with open(result_file, "w") as file:
-        file.write(f"Matching results:\n")
+        file.write(f"Student average satisfaction: {student_avg:.3f}\n")
+        file.write(f"\nSchool average satisfaction: {school_avg:.3f}\n")
+        file.write(f"\n\nMatching results:\n")
         for student, school in matches:
             file.write(f"Student {student} matches with School {school}\n")
-
-        file.write(f"\nStudent average satisfaction: {student_avg:.3f}\n")
-        file.write(f"School average satisfaction: {school_avg:.3f}\n")
 
     return True
 
