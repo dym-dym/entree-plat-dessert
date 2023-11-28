@@ -26,8 +26,12 @@ def satisfaction_curve(size_start: int, size_end: int, tests_per_size: int):
         school_satisfaction_array.append(school_satisfaction_sum / tests_per_size)
 
     plt.figure()
-    plt.plot(student_satisfaction_array, color='blue', label='Student Satisfaction')
-    plt.plot(school_satisfaction_array, color='red', label='School Satisfaction')
+    plt.plot(range(size_start, size_end),student_satisfaction_array, color='blue', label='Student Satisfaction')
+    plt.xlim([size_start, size_end])
+    plt.plot(range(size_start, size_end),school_satisfaction_array, color='red', label='School Satisfaction')
+    plt.xlabel('Size of the problem') 
+    plt.ylabel('Percentage of satisfaction') 
+    plt.title(label="Mean satisfaction distribution curve over space with "+tests_per_size+" tests", fontstyle='italic') 
     plt.legend()
 
     # Create the 'figs' directory if it doesn't exist

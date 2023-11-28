@@ -14,8 +14,8 @@ class App(ctk.CTk):
         super().__init__()
 
         self.title('Projet HAI902I: Aide à la décision')
-        self.geometry("360x720")
-        self.grid_columnconfigure((0, 1), weight=1)
+        self.geometry("720x720")
+        self.grid_columnconfigure((0, 3), weight=1)
 
         def get_matching():
             input_value = self.Input.get()
@@ -103,16 +103,16 @@ class App(ctk.CTk):
 
         # Create an input
         self.Input = ctk.CTkEntry(
-            self, width=250, height=30, placeholder_text="Enter a number of students or schools"
+            self, width=250, height=30, placeholder_text="Number of students or schools"
         )
         self.Input.grid(row=1, padx=5, pady=10, sticky="ew", columnspan=2)
 
         # Create CTk Buttons
         self.button_stats = ctk.CTkButton(
             master=self, text="Get the satisfactions", command=get_satisfactions,
-            fg_color="transparent", border_width=2, border_color='#15869d', width=10
+            fg_color="transparent", border_width=2, border_color='#15869d', width=150
         )
-        self.button_stats.grid(row=2, padx=2, pady=2, sticky="ew", columnspan=2)
+        self.button_stats.grid(row=2, padx=2, pady=2, columnspan=1)
 
         # Create a frame for displaying the statistics of the matching
         self.frame = ctk.CTkFrame(self, width=30)
@@ -135,32 +135,38 @@ class App(ctk.CTk):
             master=self, text="Get matching", command=get_matching,
             fg_color="transparent", border_width=2, border_color='#15869d', width=100
         )
-        self.button_matching.grid(row=4, padx=4, pady=2, sticky="ew", columnspan=2)
+        self.button_matching.grid(row=4, padx=4, pady=2, columnspan=2)
+
+        self.test_label = ctk.CTkLabel(
+            self, text="Affichage de la moyenne de N tests de satisfactions sur des jeux de données de taille différente. \n "
+            "Il faut entrer la taille minimale et maximale des jeux de données, ainsi que le nombre de tests souhaités. "
+        )
+        self.test_label.grid(row=6, padx=5, pady=10, columnspan=2)
 
         # Create an input for size_start
         self.SizeStart = ctk.CTkEntry(
-            self, width=250, height=30, placeholder_text="Enter the starting number for the graph"
+            self, width=250, height=30, placeholder_text="Minimal size of the test batch"
         )
-        self.SizeStart.grid(row=6, padx=5, pady=10, sticky="ew", columnspan=2)
+        self.SizeStart.grid(row=7, padx=5, pady=10, sticky="ew", columnspan=2)
 
         # Create an input for size_end
         self.SizeEnd = ctk.CTkEntry(
-            self, width=250, height=30, placeholder_text="Enter the ending number for the graph"
+            self, width=250, height=30, placeholder_text="Maximal size of the tests batch"
         )
-        self.SizeEnd.grid(row=7, padx=5, pady=10, sticky="ew", columnspan=2)
+        self.SizeEnd.grid(row=8, padx=5, pady=10, sticky="ew", columnspan=2)
 
         # Create an input for tests_per_size
         self.TestsPerSize = ctk.CTkEntry(
-            self, width=250, height=30, placeholder_text="Enter the number of tests for the graph"
+            self, width=250, height=30, placeholder_text="Number of tests for the graph"
         )
-        self.TestsPerSize.grid(row=8, padx=5, pady=10, sticky="ew", columnspan=2)
+        self.TestsPerSize.grid(row=9, padx=5, pady=10, sticky="ew", columnspan=2)
 
         # Create a button for showing the graph
         self.button_show_graph = ctk.CTkButton(
             master=self, text="Show Graph", command=show_graph,
-            fg_color="transparent", border_width=2, border_color='#15869d', width=10
+            fg_color="transparent", border_width=2, border_color='#15869d', width=100
         )
-        self.button_show_graph.grid(row=9, padx=2, pady=2, columnspan=2, sticky="ew")
+        self.button_show_graph.grid(row=10, padx=2, pady=2, columnspan=2)
 
         # Placeholder for students and schools (you need to define these variables)
         self.students = np.array([])
