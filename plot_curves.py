@@ -88,7 +88,8 @@ def time_curve(size_start: int, size_end: int, tests_per_size: int):
     plt.plot(range(size_start, size_end), times, color='blue', label='Average time')
     plt.xlim([size_start, size_end])
     plt.xlabel('Size of the problem') 
-    plt.title(label="Average execution time on "+str(tests_per_size)+" tests per problem size", fontstyle='italic') 
+    plt.title(label="Average execution time on "+str(tests_per_size)+" tests per problem size", fontstyle='italic')
+    plt.ylabel('Average time (seconds)') 
     plt.legend()
 
     # Create the 'figs' directory if it doesn't exist
