@@ -19,8 +19,8 @@ class App(ctk.CTk):
 
 
         def compute_matching():
-            input_value = self.Input.get()
             try:
+                input_value = self.Input.get()
                 input_value = int(input_value)
                 result_file = "matching_results.txt"
 
@@ -53,6 +53,7 @@ class App(ctk.CTk):
 
         def get_matching():
             try:
+                input_value = self.Input.get()
                 compute_matching()
 
                 result_file = "matching_results.txt"
