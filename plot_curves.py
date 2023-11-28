@@ -23,12 +23,9 @@ def satisfaction_histogram(matches, students, schools):
     
     axs[0].legend()
     axs[1].legend()
-
-    # Create the 'figs' directory if it doesn't exist
-    os.makedirs('figs', exist_ok=True)
-
-    # Save the figure with a proper file path
-    plt.savefig(f"figs/hist.png")
+    plt.show()
+    
+    
 
 
 def satisfaction_curve(size_start: int, size_end: int, tests_per_size: int):

@@ -24,32 +24,28 @@ class App(ctk.CTk):
                 input_value = int(input_value)
                 result_file = "matching_results.txt"
 
-                students, schools = random_preferences(input_value, input_value)
+                self.students, self.schools = random_preferences(input_value, input_value)
                 
-                matches = stable_marriage(students, schools)
+                self.matches = stable_marriage(self.students, self.schools)
                 
-                satisfaction_histogram(matches, students, schools)
-
-                if not is_everyone_matched(matches, students, schools):
+                if not is_everyone_matched(self.matches, self.students, self.schools):
                     print("Warning : Not everyone is matched")
                     complete = False
                 else:
                     complete = True
 
-                if not is_matching_stable(matches, students, schools):
+                if not is_matching_stable(self.matches, self.students, self.schools):
                     print("Matching is unstable")
                     return False
 
-                student_scores, school_scores = satisfaction(matches, students, schools)
+                student_scores, school_scores = satisfaction(self.matches, self.students, self.schools)
                 print(student_scores, school_scores)
                 student_avg = np.mean(student_scores)
                 school_avg = np.mean(school_scores)
                 print(f"Student average satisfaction : {student_avg:.3f}")
                 print(f"School average satisfaction : {school_avg:.3f}")
 
-                write_result(matches, student_avg, school_avg, result_file=result_file)
-
-                return matches, students, schools
+                write_result(self.matches, student_avg, school_avg, result_file=result_file)
 
             except ValueError:
                 print("Invalid input. Please enter a valid number.")
@@ -58,7 +54,7 @@ class App(ctk.CTk):
         def get_matching():
             try:
                 input_value = self.Input.get()
-                matches, students, schools = compute_matching()
+                compute_matching()
 
                 result_file = "matching_results.txt"
                 with open(result_file, "r") as file:
@@ -83,21 +79,13 @@ class App(ctk.CTk):
         def show_graph():
             try:
                 # Wait for a moment to ensure the image is saved
-                self.after(100, lambda: self.display_graph(0, 0, 0))
+                self.after(100, lambda: display_graph())
 
             except ValueError:
                 print("Invalid input. Please compute matching first")
 
-        def display_graph(self, size_start, size_end, tests_per_size):
-            # Create a standard tkinter Canvas
-            graph_canvas = tk.Canvas(self)
-            graph_canvas.grid(row=11, padx=5, pady=10, columnspan=2, sticky="ew")
-
-            # Read the image and display it on the canvas
-            img_path = f"figs/hist.png"
-            img = tk.PhotoImage(file=img_path)
-            graph_canvas.create_image(10, 10, anchor=tk.NW, image=img)
-            graph_canvas.img = img
+        def display_graph():
+            satisfaction_histogram(self.matches, self.students, self.schools)
 
         # Make a title on the page
         self.title_label = ctk.CTkLabel(
@@ -128,41 +116,16 @@ class App(ctk.CTk):
         self.output_label_satisfaction.pack(fill='both', expand=True)
 
         # Create a scrollable frame for displaying the result
-        self.scroll_frame = ctk.CTkScrollableFrame(self, width=30)
+        self.scroll_frame = ctk.CTkScrollableFrame(self, width=30, height=400)
         self.scroll_frame.grid(row=5, padx=2, pady=10, columnspan=2, sticky="ew")
 
         # Create a label for displaying the result within the scroll frame
         self.output_label_matching = ctk.CTkLabel(self.scroll_frame, text='', justify='left')
         self.output_label_matching.pack(fill='both', expand=True)
 
-
-        self.test_label = ctk.CTkLabel(
-            self, text="Affichage de la moyenne de N tests de satisfactions sur des jeux de données de taille différente. \n "
-            "Il faut entrer la taille minimale et maximale des jeux de données, ainsi que le nombre de tests souhaités. "
-        )
-        self.test_label.grid(row=6, padx=5, pady=10, columnspan=2)
-
-        # Create an input for size_start
-        self.SizeStart = ctk.CTkEntry(
-            self, width=250, height=30, placeholder_text="Minimal size of the test batch"
-        )
-        self.SizeStart.grid(row=7, padx=5, pady=10, sticky="ew", columnspan=2)
-
-        # Create an input for size_end
-        self.SizeEnd = ctk.CTkEntry(
-            self, width=250, height=30, placeholder_text="Maximal size of the tests batch"
-        )
-        self.SizeEnd.grid(row=8, padx=5, pady=10, sticky="ew", columnspan=2)
-
-        # Create an input for tests_per_size
-        self.TestsPerSize = ctk.CTkEntry(
-            self, width=250, height=30, placeholder_text="Number of tests for the graph"
-        )
-        self.TestsPerSize.grid(row=9, padx=5, pady=10, sticky="ew", columnspan=2)
-
         # Create a button for showing the graph
         self.button_show_graph = ctk.CTkButton(
-            master=self, text="Show Graph", command=show_graph,
+            master=self, text="Show Histogram", command=show_graph,
             fg_color="transparent", border_width=2, border_color='#15869d', width=100
         )
         self.button_show_graph.grid(row=10, padx=2, pady=2, columnspan=2)
