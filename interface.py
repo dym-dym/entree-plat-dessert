@@ -5,6 +5,8 @@ from matching import *
 import os
 from test_output import *
 from plot_curves import satisfaction_curve, satisfaction_histogram
+from serializer import *
+from pathlib import Path
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("dark-blue")
@@ -17,15 +19,33 @@ class App(ctk.CTk):
         self.geometry("720x720")
         self.grid_columnconfigure((0, 3), weight=1)
 
+        self.random_pref = True
+
+
+        def openFile():
+            tf = ctk.filedialog.askopenfilename(
+                initialdir="./", 
+                title="Open Preference file", 
+                filetypes=(("Text Files", "*.txt"),)
+                )
+            self.students, self.schools = read_preferences(tf)
+            self.random_pref = False
+            self.labelFileVar.set(Path(tf).name)
+            self.Input.delete(0 ,'end')
+        
+        
 
         def compute_matching():
             try:
-                input_value = self.Input.get()
-                input_value = int(input_value)
+                if self.random_pref:
+                    input_value = self.Input.get()
+                    input_value = int(input_value)
+                    self.students, self.schools = random_preferences(input_value, input_value)
+                else: 
+                    self.random_pref = True
+                
                 result_file = "matching_results.txt"
 
-                self.students, self.schools = random_preferences(input_value, input_value)
-                
                 self.matches = stable_marriage(self.students, self.schools)
                 
                 if not is_everyone_matched(self.matches, self.students, self.schools):
@@ -90,26 +110,44 @@ class App(ctk.CTk):
         # Make a title on the page
         self.title_label = ctk.CTkLabel(
             self, text="Voici une implémentation de l'algorithme de mariage stable entre étudiants et établissements."
-                        '\n' " Veuillez rentrer une valeur correspondant aux nombre d'étudiants et d'écoles que vous souhaitez mettre en relation :"
+                        '\n' " Veuillez charger un fichier de préférences :"
         )
         self.title_label.grid(row=0, padx=5, pady=10, columnspan=2)
+
+        # Create CTk Buttons
+        self.button_loadfile = ctk.CTkButton(
+            master=self, text="Load preferences", command=openFile,
+            fg_color="transparent", border_width=2, border_color='#15869d', width=100
+        )
+        self.button_loadfile.grid(column=0, row=1, padx=2, pady=2, columnspan=2)
+
+        self.labelFileVar = ctk.StringVar()
+        self.labelFile = ctk.CTkLabel(self, textvariable=self.labelFileVar)
+        self.labelFile.grid(column=0, row=1, padx=2, pady=2, columnspan=2, sticky="e")
+
+
+
+        self.input_label = ctk.CTkLabel(
+            self, text="Ou spécifiez un nombre d'étudiants/établissements pour générer des préférences aléatoires : "
+        )
+        self.input_label.grid(row=2, column=0, padx=5, pady=10, columnspan=1, sticky="e")
 
         # Create an input
         self.Input = ctk.CTkEntry(
             self, width=250, height=30, placeholder_text="Number of students or schools"
         )
-        self.Input.grid(row=1, padx=5, pady=10, sticky="ew", columnspan=2)
+        self.Input.grid(row=2, column=1, padx=5, pady=10, sticky="ew", columnspan=1)
 
         # Create CTk Buttons
         self.button_matching = ctk.CTkButton(
             master=self, text="Get matching", command=get_matching,
             fg_color="transparent", border_width=2, border_color='#15869d', width=100
         )
-        self.button_matching.grid(row=2, padx=2, pady=2, columnspan=1)
+        self.button_matching.grid(row=3, padx=2, pady=2, columnspan=2)
 
         # Create a frame for displaying the statistics of the matching
         self.frame = ctk.CTkFrame(self, width=30)
-        self.frame.grid(row=3, padx=5, pady=10, columnspan=2, sticky="ew")
+        self.frame.grid(row=4, padx=5, pady=10, columnspan=2, sticky="ew")
 
         # Create a label for displaying the satisfactions in a simple frame
         self.output_label_satisfaction = ctk.CTkLabel(self.frame, text='', justify='left')
@@ -128,7 +166,7 @@ class App(ctk.CTk):
             master=self, text="Show Histogram", command=show_graph,
             fg_color="transparent", border_width=2, border_color='#15869d', width=100
         )
-        self.button_show_graph.grid(row=10, padx=2, pady=2, columnspan=2)
+        self.button_show_graph.grid(row=11, padx=2, pady=2, columnspan=2)
 
         # Placeholder for students and schools (you need to define these variables)
         self.students = np.array([])
