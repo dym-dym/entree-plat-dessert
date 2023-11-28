@@ -4,7 +4,7 @@ from utils import *
 from matching import *
 import os
 from test_output import *
-from plot_curves import satisfaction_curve
+from plot_curves import satisfaction_curve, satisfaction_histogram
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("dark-blue")
@@ -27,6 +27,8 @@ class App(ctk.CTk):
                 students, schools = random_preferences(input_value, input_value)
                 
                 matches = stable_marriage(students, schools)
+                
+                satisfaction_histogram(matches, students, schools)
 
                 if not is_everyone_matched(matches, students, schools):
                     print("Warning : Not everyone is matched")
@@ -47,6 +49,8 @@ class App(ctk.CTk):
 
                 write_result(matches, student_avg, school_avg, result_file=result_file)
 
+                return matches, students, schools
+
             except ValueError:
                 print("Invalid input. Please enter a valid number.")
 
@@ -54,7 +58,7 @@ class App(ctk.CTk):
         def get_matching():
             try:
                 input_value = self.Input.get()
-                compute_matching()
+                matches, students, schools = compute_matching()
 
                 result_file = "matching_results.txt"
                 with open(result_file, "r") as file:
@@ -77,31 +81,12 @@ class App(ctk.CTk):
                 print("Invalid input. Please enter a valid number.")
 
         def show_graph():
-            input_value = self.Input.get()
-
             try:
-                result_file = "matching_results.txt"
-
-                # Additional input for tests_per_size
-                tests_per_size = int(self.TestsPerSize.get())
-                
-                # Input for size_start
-                size_start = int(self.SizeStart.get())
-
-                # Input for size_end
-                size_end = int(self.SizeEnd.get())
-
-                # Ensure the 'figs' directory exists
-                os.makedirs('figs', exist_ok=True)
-
-                # Generate the graph based on the input values
-                satisfaction_curve(size_start, size_end, tests_per_size)
-
                 # Wait for a moment to ensure the image is saved
-                self.after(100, lambda: self.display_graph(size_start, size_end, tests_per_size))
+                self.after(100, lambda: self.display_graph(0, 0, 0))
 
             except ValueError:
-                print("Invalid input. Please enter valid numbers.")
+                print("Invalid input. Please compute matching first")
 
         def display_graph(self, size_start, size_end, tests_per_size):
             # Create a standard tkinter Canvas
@@ -109,7 +94,7 @@ class App(ctk.CTk):
             graph_canvas.grid(row=11, padx=5, pady=10, columnspan=2, sticky="ew")
 
             # Read the image and display it on the canvas
-            img_path = f"figs/curve_{size_start}_{size_end}_{tests_per_size}.png"
+            img_path = f"figs/hist.png"
             img = tk.PhotoImage(file=img_path)
             graph_canvas.create_image(10, 10, anchor=tk.NW, image=img)
             graph_canvas.img = img
