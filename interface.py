@@ -1,10 +1,10 @@
 import tkinter as tk
-from tkinter import ttk
 import customtkinter as ctk
 from utils import *
-from test_output import *
-from plot_curves import *
 from matching import *
+import os
+from test_output import *
+from plot_curves import satisfaction_curve
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("dark-blue")
@@ -14,30 +14,24 @@ class App(ctk.CTk):
         super().__init__()
 
         self.title('Projet HAI902I: Aide à la décision')
-        self.geometry("1280x720")
+        self.geometry("360x720")
         self.grid_columnconfigure((0, 1), weight=1)
 
         def get_matching():
             input_value = self.Input.get()
 
             try:
-                input_value = int(input_value)  # Convert input to integer (assuming it's a number)
+                input_value = int(input_value)
                 result_file = "matching_results.txt"
-                random_test(input_value, input_value, result_file)  # Use the input as both student_number and school_number
+                random_test(input_value, input_value, result_file)
 
-                # Read the results from the file
                 with open(result_file, "r") as file:
                     lines = file.readlines()
-
-                    # Exclude lines starting with the specified prefixes
                     filtered_lines = [line.strip() for line in lines if not line.startswith("Student average satisfaction:")
                                                                         and not line.startswith("School average satisfaction:")
                                                                         and line.strip()]
 
-                    # Concatenate the filtered lines
                     result_text = "\n".join(filtered_lines)
-
-                # Update the output label
                 self.output_label_matching.configure(text=result_text)
 
             except ValueError:
@@ -47,72 +41,126 @@ class App(ctk.CTk):
             input_value = self.Input.get()
 
             try:
-                input_value = int(input_value)  # Convert input to integer (assuming it's a number)
+                input_value = int(input_value)
                 result_file = "matching_results.txt"
-                random_test(input_value, input_value, result_file)  # Use the input as both student_number and school_number
+                random_test(input_value, input_value, result_file)
 
-                # Read the results from the file
                 with open(result_file, "r") as file:
                     lines = file.readlines()
-
-                    # Filter lines starting with the specified prefixes
                     student_lines = [line.strip() for line in lines if line.startswith("Student average satisfaction:")]
                     school_lines = [line.strip() for line in lines if line.startswith("School average satisfaction:")]
 
-                    # Concatenate the filtered lines
                     result_text = "\n".join(student_lines + school_lines)
-
-                # Update the output label
                 self.output_label_satisfaction.configure(text=result_text)
 
             except ValueError:
                 print("Invalid input. Please enter a valid number.")
 
-        def show_graph(self):
-            # Call the satisfaction_curve function with the Canvas as an argument
-            satisfaction_curve(self.graph_canvas)
+        def show_graph():
+            input_value = self.Input.get()
 
+            try:
+                result_file = "matching_results.txt"
 
-        # Make a title in the page
-        self.title = ctk.CTkLabel(self, text="Voici une implémentation de l'algorithme de mariage stable entre étudiants et établissements."+'\n'+" Veuillez rentrer une valeur correspondant aux nombre d'étudiants et d'écoles que vous souhaitez mettre en relation :")
-        self.title.grid(row=0, padx=5, pady=10)
+                # Additional input for tests_per_size
+                tests_per_size = int(self.TestsPerSize.get())
+                
+                # Input for size_start
+                size_start = int(self.SizeStart.get())
+
+                # Input for size_end
+                size_end = int(self.SizeEnd.get())
+
+                # Ensure the 'figs' directory exists
+                os.makedirs('figs', exist_ok=True)
+
+                # Generate the graph based on the input values
+                satisfaction_curve(size_start, size_end, tests_per_size)
+
+                # Wait for a moment to ensure the image is saved
+                self.after(100, lambda: self.display_graph(size_start, size_end, tests_per_size))
+
+            except ValueError:
+                print("Invalid input. Please enter valid numbers.")
+
+        def display_graph(self, size_start, size_end, tests_per_size):
+            # Create a standard tkinter Canvas
+            graph_canvas = tk.Canvas(self)
+            graph_canvas.grid(row=11, padx=5, pady=10, columnspan=2, sticky="ew")
+
+            # Read the image and display it on the canvas
+            img_path = f"figs/curve_{size_start}_{size_end}_{tests_per_size}.png"
+            img = tk.PhotoImage(file=img_path)
+            graph_canvas.create_image(10, 10, anchor=tk.NW, image=img)
+            graph_canvas.img = img
+
+        # Make a title on the page
+        self.title_label = ctk.CTkLabel(
+            self, text="Voici une implémentation de l'algorithme de mariage stable entre étudiants et établissements."
+                        '\n' " Veuillez rentrer une valeur correspondant aux nombre d'étudiants et d'écoles que vous souhaitez mettre en relation :"
+        )
+        self.title_label.grid(row=0, padx=5, pady=10, columnspan=2)
 
         # Create an input
-        self.Input = ctk.CTkEntry(self, width=250, height=30, placeholder_text="Enter a number of students or schools")
-        self.Input.grid(row=1, padx=5, pady=10, sticky="ew")
+        self.Input = ctk.CTkEntry(
+            self, width=250, height=30, placeholder_text="Enter a number of students or schools"
+        )
+        self.Input.grid(row=1, padx=5, pady=10, sticky="ew", columnspan=2)
 
         # Create CTk Buttons
         self.button_stats = ctk.CTkButton(
             master=self, text="Get the satisfactions", command=get_satisfactions,
             fg_color="transparent", border_width=2, border_color='#15869d', width=10
         )
-        self.button_stats.grid(row=2, padx=2, pady=2, sticky="ew")
-
-        self.button_matching = ctk.CTkButton(
-            master=self, text="Get matching", command=get_matching,
-            fg_color="transparent", border_width=2, border_color='#15869d', width=100
-        )
-        self.button_matching.grid(row=4, padx=4, pady=2, sticky="ew")
-
-
-
-        # Create a scrollable frame for displaying the result
-        self.scroll_frame = ctk.CTkScrollableFrame(self, width=30)
-        self.scroll_frame.grid(row=5, padx=2, pady=10, sticky="ew")
+        self.button_stats.grid(row=2, padx=2, pady=2, sticky="ew", columnspan=2)
 
         # Create a frame for displaying the statistics of the matching
         self.frame = ctk.CTkFrame(self, width=30)
-        self.frame.grid(row=3, padx=5, pady=10, sticky="ew")
+        self.frame.grid(row=3, padx=5, pady=10, columnspan=2, sticky="ew")
 
-        # Create a label for displaying the satisfactions in a simple frame 
+        # Create a label for displaying the satisfactions in a simple frame
         self.output_label_satisfaction = ctk.CTkLabel(self.frame, text='', justify='left')
         self.output_label_satisfaction.pack(fill='both', expand=True)
-        
+
+        # Create a scrollable frame for displaying the result
+        self.scroll_frame = ctk.CTkScrollableFrame(self, width=30)
+        self.scroll_frame.grid(row=5, padx=2, pady=10, columnspan=2, sticky="ew")
+
         # Create a label for displaying the result within the scroll frame
         self.output_label_matching = ctk.CTkLabel(self.scroll_frame, text='', justify='left')
         self.output_label_matching.pack(fill='both', expand=True)
 
-    
+        # Create CTk Button for getting matching results
+        self.button_matching = ctk.CTkButton(
+            master=self, text="Get matching", command=get_matching,
+            fg_color="transparent", border_width=2, border_color='#15869d', width=100
+        )
+        self.button_matching.grid(row=4, padx=4, pady=2, sticky="ew", columnspan=2)
+
+        # Create an input for size_start
+        self.SizeStart = ctk.CTkEntry(
+            self, width=250, height=30, placeholder_text="Enter the starting number for the graph"
+        )
+        self.SizeStart.grid(row=6, padx=5, pady=10, sticky="ew", columnspan=2)
+
+        # Create an input for size_end
+        self.SizeEnd = ctk.CTkEntry(
+            self, width=250, height=30, placeholder_text="Enter the ending number for the graph"
+        )
+        self.SizeEnd.grid(row=7, padx=5, pady=10, sticky="ew", columnspan=2)
+
+        # Create an input for tests_per_size
+        self.TestsPerSize = ctk.CTkEntry(
+            self, width=250, height=30, placeholder_text="Enter the number of tests for the graph"
+        )
+        self.TestsPerSize.grid(row=8, padx=5, pady=10, sticky="ew", columnspan=2)
+
+        # Create a button for showing the graph
+        self.button_show_graph = ctk.CTkButton(
+            master=self, text="Show Graph", command=show_graph,
+            fg_color="transparent", border_width=2, border_color='#15869d', width=10
+        )
+        self.button_show_graph.grid(row=9, padx=2, pady=2, columnspan=2, sticky="ew")
 
         # Placeholder for students and schools (you need to define these variables)
         self.students = np.array([])
