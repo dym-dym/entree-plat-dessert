@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from matching import *
 from utils import *
 import numpy as np
+import time
 
 # Plots the graph of the satisfactions for "test_per_size" tests between a range of numbers of schools and students
 
@@ -65,6 +66,40 @@ def satisfaction_curve(size_start: int, size_end: int, tests_per_size: int):
     # Show the figure
     plt.show()
 
+
+
+def time_curve(size_start: int, size_end: int, tests_per_size: int):
+    times = []
+
+    print(f"Size : 0, test 0/{tests_per_size}", end="\r")
+
+    for size in range(size_start, size_end):
+        size_time = []
+        for test_i in range(tests_per_size):
+            students, schools = random_preferences(size, size)
+            start = time.time()
+            matches = stable_marriage(students, schools)
+            end = time.time() - start
+            size_time.append(end / 1000)
+            print(f"Size : {size}, test {test_i + 1}/{tests_per_size}", end="\r")
+        times.append(sum(size_time)/tests_per_size)
+
+    plt.figure()
+    plt.plot(range(size_start, size_end), times, color='blue', label='Average time')
+    plt.xlim([size_start, size_end])
+    plt.xlabel('Size of the problem') 
+    plt.title(label="Average execution time on "+str(tests_per_size)+" tests per problem size", fontstyle='italic') 
+    plt.legend()
+
+    # Create the 'figs' directory if it doesn't exist
+    os.makedirs('figs', exist_ok=True)
+
+    # Save the figure with a proper file path
+    plt.savefig(f"figs/time_{size_start}_{size_end}_{tests_per_size}.png")
+
+    # Show the figure
+    plt.show()
+
 if __name__ == "__main__":
     if len(sys.argv) == 4:
 
@@ -72,7 +107,9 @@ if __name__ == "__main__":
         size_end = int(sys.argv[2])
         tests_per_size = int(sys.argv[3])
 
-        satisfaction_curve(size_start, size_end, tests_per_size)
+        #satisfaction_curve(size_start, size_end, tests_per_size)
+        time_curve(size_start, size_end, tests_per_size)
+
     elif len(sys.argv) == 2:
         size = int(sys.argv[1])
         students, schools = random_preferences(size, size)
