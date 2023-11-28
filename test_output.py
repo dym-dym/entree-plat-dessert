@@ -51,6 +51,16 @@ def is_matching_stable(matches: list[tuple[int, int]], students: np.ndarray, sch
                 stable = False
     return stable
 
+def write_result(matches, student_avg, school_avg, result_file="matching_results.txt"):
+    # Save results to a file
+    with open(result_file, "w") as file:
+        file.write(f"Student average satisfaction: {student_avg:.3f}\n")
+        file.write(f"\nSchool average satisfaction: {school_avg:.3f}\n")
+        file.write(f"\n\nMatching results:\n")
+        for student, school in matches:
+            file.write(f"Student {student} matches with School {school}\n")
+    
+
 
 def random_test(student_number, school_number, result_file="matching_results.txt"):
     """
@@ -95,12 +105,7 @@ def random_test(student_number, school_number, result_file="matching_results.txt
         print("Matching is stable, but not complete")
 
     # Save results to a file
-    with open(result_file, "w") as file:
-        file.write(f"Student average satisfaction: {student_avg:.3f}\n")
-        file.write(f"\nSchool average satisfaction: {school_avg:.3f}\n")
-        file.write(f"\n\nMatching results:\n")
-        for student, school in matches:
-            file.write(f"Student {student} matches with School {school}\n")
+    write_result(matches, student_avg, school_avg, result_file=result_file)
 
     return True
 

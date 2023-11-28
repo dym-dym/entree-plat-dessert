@@ -3,8 +3,29 @@ import os
 import matplotlib.pyplot as plt
 from matching import *
 from utils import *
+import numpy as np
 
 # Plots the graph of the satisfactions for "test_per_size" tests between a range of numbers of schools and students
+
+def satisfaction_histogram(matches, students, schools):
+    student_scores, school_scores = satisfaction(matches, students, schools)
+
+    fig, axs = plt.subplots(nrows=2, sharex=True)
+    bins = np.arange(0,1,0.01)
+    plt.xlim([0, 1])
+    plt.title(label="Student and school satisfaction histograms", fontstyle='italic') 
+    axs[0].hist(student_scores, bins=bins, color='blue', label='Student Satisfaction', rwidth=0.8)
+    axs[1].hist(school_scores, bins=bins, color='red', label='School Satisfaction', rwidth=0.8)
+    axs[0].tick_params(labelbottom=True)
+    plt.xlabel('Satisfaction') 
+    plt.ylabel('Count')
+
+    
+    axs[0].legend()
+    axs[1].legend()
+
+    plt.show()
+
 
 def satisfaction_curve(size_start: int, size_end: int, tests_per_size: int):
     student_satisfaction_array = []
@@ -44,11 +65,17 @@ def satisfaction_curve(size_start: int, size_end: int, tests_per_size: int):
     plt.show()
 
 if __name__ == "__main__":
-    if len(sys.argv) != 4:
+    if len(sys.argv) == 4:
+
+        size_start = int(sys.argv[1])
+        size_end = int(sys.argv[2])
+        tests_per_size = int(sys.argv[3])
+
+        satisfaction_curve(size_start, size_end, tests_per_size)
+    elif len(sys.argv) == 2:
+        size = int(sys.argv[1])
+        students, schools = random_preferences(size, size)
+        matches = stable_marriage(students, schools)
+        satisfaction_histogram(matches, students, schools)
+    else:
         print('Use : python -m test.plot_curves size_start size_end tests_per_size')
-
-    size_start = int(sys.argv[1])
-    size_end = int(sys.argv[2])
-    tests_per_size = int(sys.argv[3])
-
-    satisfaction_curve(size_start, size_end, tests_per_size)

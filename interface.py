@@ -17,41 +17,60 @@ class App(ctk.CTk):
         self.geometry("720x720")
         self.grid_columnconfigure((0, 3), weight=1)
 
-        def get_matching():
-            input_value = self.Input.get()
 
+        def compute_matching():
+            input_value = self.Input.get()
             try:
                 input_value = int(input_value)
                 result_file = "matching_results.txt"
-                random_test(input_value, input_value, result_file)
 
+                students, schools = random_preferences(input_value, input_value)
+                
+                matches = stable_marriage(students, schools)
+
+                if not is_everyone_matched(matches, students, schools):
+                    print("Warning : Not everyone is matched")
+                    complete = False
+                else:
+                    complete = True
+
+                if not is_matching_stable(matches, students, schools):
+                    print("Matching is unstable")
+                    return False
+
+                student_scores, school_scores = satisfaction(matches, students, schools)
+                print(student_scores, school_scores)
+                student_avg = np.mean(student_scores)
+                school_avg = np.mean(school_scores)
+                print(f"Student average satisfaction : {student_avg:.3f}")
+                print(f"School average satisfaction : {school_avg:.3f}")
+
+                write_result(matches, student_avg, school_avg, result_file=result_file)
+
+            except ValueError:
+                print("Invalid input. Please enter a valid number.")
+
+
+        def get_matching():
+            try:
+                compute_matching()
+
+                result_file = "matching_results.txt"
                 with open(result_file, "r") as file:
                     lines = file.readlines()
                     filtered_lines = [line.strip() for line in lines if not line.startswith("Student average satisfaction:")
                                                                         and not line.startswith("School average satisfaction:")
                                                                         and line.strip()]
 
-                    result_text = "\n".join(filtered_lines)
-                self.output_label_matching.configure(text=result_text)
+                    matching_text = "\n".join(filtered_lines)
 
-            except ValueError:
-                print("Invalid input. Please enter a valid number.")
-
-        def get_satisfactions():
-            input_value = self.Input.get()
-
-            try:
-                input_value = int(input_value)
-                result_file = "matching_results.txt"
-                random_test(input_value, input_value, result_file)
-
-                with open(result_file, "r") as file:
-                    lines = file.readlines()
                     student_lines = [line.strip() for line in lines if line.startswith("Student average satisfaction:")]
                     school_lines = [line.strip() for line in lines if line.startswith("School average satisfaction:")]
 
-                    result_text = "\n".join(student_lines + school_lines)
-                self.output_label_satisfaction.configure(text=result_text)
+                    satisfaction_text = "\n".join(student_lines + school_lines)
+
+                self.output_label_matching.configure(text=matching_text)
+                self.output_label_satisfaction.configure(text=satisfaction_text)
 
             except ValueError:
                 print("Invalid input. Please enter a valid number.")
@@ -108,11 +127,11 @@ class App(ctk.CTk):
         self.Input.grid(row=1, padx=5, pady=10, sticky="ew", columnspan=2)
 
         # Create CTk Buttons
-        self.button_stats = ctk.CTkButton(
-            master=self, text="Get the satisfactions", command=get_satisfactions,
-            fg_color="transparent", border_width=2, border_color='#15869d', width=150
+        self.button_matching = ctk.CTkButton(
+            master=self, text="Get matching", command=get_matching,
+            fg_color="transparent", border_width=2, border_color='#15869d', width=100
         )
-        self.button_stats.grid(row=2, padx=2, pady=2, columnspan=1)
+        self.button_matching.grid(row=2, padx=2, pady=2, columnspan=1)
 
         # Create a frame for displaying the statistics of the matching
         self.frame = ctk.CTkFrame(self, width=30)
@@ -130,12 +149,6 @@ class App(ctk.CTk):
         self.output_label_matching = ctk.CTkLabel(self.scroll_frame, text='', justify='left')
         self.output_label_matching.pack(fill='both', expand=True)
 
-        # Create CTk Button for getting matching results
-        self.button_matching = ctk.CTkButton(
-            master=self, text="Get matching", command=get_matching,
-            fg_color="transparent", border_width=2, border_color='#15869d', width=100
-        )
-        self.button_matching.grid(row=4, padx=4, pady=2, columnspan=2)
 
         self.test_label = ctk.CTkLabel(
             self, text="Affichage de la moyenne de N tests de satisfactions sur des jeux de données de taille différente. \n "
