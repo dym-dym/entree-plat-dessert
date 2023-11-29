@@ -33,7 +33,13 @@ class App(ctk.CTk):
             self.labelFileVar.set(Path(tf).name)
             self.Input.delete(0 ,'end')
         
-        
+        def save_prefs():
+            tf = ctk.filedialog.asksaveasfilename(
+                initialdir="./", 
+                title="Save Preference file", 
+                filetypes=(("Text Files", "*.txt"),)
+                )
+            write_preferences(tf, self.students, self.schools)
 
         def compute_matching():
             try:
@@ -128,7 +134,7 @@ class App(ctk.CTk):
 
 
         self.input_label = ctk.CTkLabel(
-            self, text="Ou spécifiez un nombre d'étudiants/établissements pour générer des préférences aléatoires : "
+            self, text="Ou spécifiez un nombre d'étudiants/établissements\npour générer des préférences aléatoires : "
         )
         self.input_label.grid(row=2, column=0, padx=5, pady=10, columnspan=1, sticky="e")
 
@@ -166,8 +172,15 @@ class App(ctk.CTk):
             master=self, text="Show Histogram", command=show_graph,
             fg_color="transparent", border_width=2, border_color='#15869d', width=100
         )
-        self.button_show_graph.grid(row=11, padx=2, pady=2, columnspan=2)
+        self.button_show_graph.grid(column=0, row=11, padx=2, pady=2, columnspan=2)
 
+        self.button_show_graph = ctk.CTkButton(
+            master=self, text="Save preferences", command=save_prefs,
+            fg_color="transparent", border_width=2, border_color='#15869d', width=100
+        )
+        self.button_show_graph.grid(column=1, row=11, padx=2, pady=2, columnspan=2)
+
+        
         # Placeholder for students and schools (you need to define these variables)
         self.students = np.array([])
         self.schools = np.array([])
